@@ -5,6 +5,7 @@ src/test/resources/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+sql/
 
 ### VS Code ###
 .vscode/
