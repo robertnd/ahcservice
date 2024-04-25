@@ -22,5 +22,6 @@ class HttpApi[F[_]: Concurrent: Logger: Console] private (core: Core[F]) {
 }
 
 object HttpApi {
-    def apply[F[_]: Concurrent: Logger: Console](core: Core[F]): Resource[F, HttpApi[F]] = Resource.pure(new HttpApi[F](core))
+    def apply[F[_]: Concurrent: Logger: Console](core: Core[F]): Resource[F, HttpApi[F]] = Resource.pure(
+        new HttpApi[F](core))
 }

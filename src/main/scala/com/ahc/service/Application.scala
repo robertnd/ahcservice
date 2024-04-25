@@ -17,6 +17,7 @@ import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 import cats.effect.std.Console
 import com.ahc.service.modules.*
+import org.http4s.server.middleware.CORS
 
 object Application extends IOApp.Simple {
 
@@ -34,7 +35,7 @@ object Application extends IOApp.Simple {
             .default[IO]
             .withHost(emberConfig.host)
             .withPort(emberConfig.port)
-            .withHttpApp(httpApi.endpoints.orNotFound) // .withHttpApp(allRoutes[IO].orNotFound)
+            .withHttpApp(CORS.policy.withAllowOriginAll(httpApi.endpoints.orNotFound)) 
             .build
         } yield server
 
