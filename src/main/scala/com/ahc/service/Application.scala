@@ -26,19 +26,20 @@ object Application extends IOApp.Simple {
 
   val configSource = ConfigSource.default.load[EmberConfig]
 
-  override def run: IO[Unit] = ConfigSource.default.loadF[IO, AppConfig].flatMap { case AppConfig(dbConfig, emberConfig) => 
-        val appResource = for {
-            xa <- DB.makeDBResource[IO](dbConfig)
-            core <- Core.make[IO](xa)
-            httpApi <- HttpApi[IO](core)
-            server <- EmberServerBuilder
-            .default[IO]
-            .withHost(emberConfig.host)
-            .withPort(emberConfig.port)
-            .withHttpApp(CORS.policy.withAllowOriginAll(httpApi.endpoints.orNotFound)) 
-            .build
-        } yield server
+  override def run: IO[Unit] =
+    ConfigSource.default.loadF[IO, AppConfig].flatMap { case AppConfig(dbConfig, emberConfig) =>
+      val appResource = for {
+        xa      <- DB.makeDBResource[IO](dbConfig)
+        core    <- Core.make[IO](xa)
+        httpApi <- HttpApi[IO](core)
+        server <- EmberServerBuilder
+          .default[IO]
+          .withHost(emberConfig.host)
+          .withPort(emberConfig.port)
+          .withHttpApp(CORS.policy.withAllowOriginAll(httpApi.endpoints.orNotFound))
+          .build
+      } yield server
 
-        appResource.use(_ => IO.uncancelable(_ => IO.println("AHC Server Started ...") *> IO.never))
-  }
+      appResource.use(_ => IO.uncancelable(_ => IO.println("AHC Server Started ...") *> IO.never))
+    }
 }

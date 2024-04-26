@@ -22,7 +22,7 @@ class CodeRoutes[F[_]: Concurrent: Logger: Console] private (codes: Codes[F])
   private val allCodeRoutes: HttpRoutes[F] = HttpRoutes.of[F] { case GET -> Root =>
     for {
       codesList <- codes.all()
-      resp     <- Ok(codesList)
+      resp      <- Ok(codesList)
     } yield resp
   }
 
@@ -30,12 +30,31 @@ class CodeRoutes[F[_]: Concurrent: Logger: Console] private (codes: Codes[F])
   private val findCodeRoute: HttpRoutes[F] = HttpRoutes.of[F] { case GET -> Root / code =>
     codes.find(code) flatMap {
       case Some(code) => Ok(code)
-      case None      => NotFound(FailureResponse(s"Code ${code} not found"))
+      case None       => NotFound(FailureResponse(s"Code ${code} not found"))
     }
   }
 
+  // logError(e => s"findByTag failed: ${e}")
+  // import com.ahc.service.logging.syntax._
+  // private val searchByTagRoute: HttpRoutes[F] = HttpRoutes.of[F] {
+  //   case GET -> Root / "search" / tag =>
+  //     for {
+  //       codesList <- codes.findByTag(tag).logError(e => s"findByTag failed: ${e}")
+  //       resp      <- Ok(codesList)
+  //     } yield resp
+  // }
+
+  import com.ahc.service.logging.syntax._
+  private val searchByTagRoute: HttpRoutes[F] = HttpRoutes.of[F] {
+    case GET -> Root / "search" / tags =>
+      for {
+        codesList <- codes.findByTags(tags).logError(e => s"findByTag failed: ${e}")
+        resp      <- Ok(codesList)
+      } yield resp
+  }
+
   val routes = Router(
-    "/codes" -> (allCodeRoutes <+> findCodeRoute)
+    "/codes" -> (allCodeRoutes <+> findCodeRoute <+> searchByTagRoute)
   )
 }
 
