@@ -34,16 +34,6 @@ class CodeRoutes[F[_]: Concurrent: Logger: Console] private (codes: Codes[F])
     }
   }
 
-  // logError(e => s"findByTag failed: ${e}")
-  // import com.ahc.service.logging.syntax._
-  // private val searchByTagRoute: HttpRoutes[F] = HttpRoutes.of[F] {
-  //   case GET -> Root / "search" / tag =>
-  //     for {
-  //       codesList <- codes.findByTag(tag).logError(e => s"findByTag failed: ${e}")
-  //       resp      <- Ok(codesList)
-  //     } yield resp
-  // }
-
   import com.ahc.service.logging.syntax._
   private val searchByTagRoute: HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root / "search" / tags =>

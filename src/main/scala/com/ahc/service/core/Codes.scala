@@ -64,7 +64,6 @@ class LiveCodes[F[_]: MonadCancelThrow] private (xa: Transactor[F]) extends Code
 }
 
 object LiveCodes {
-
   // id, chapter, sub_chapter, code, descr
   given codeRead: Read[Code] = Read[(Int, String, Option[String], String, Option[String])].map {
     case (
