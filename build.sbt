@@ -2,6 +2,14 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "3.2.2"
 
+ThisBuild / assemblyMergeStrategy  := {
+  case PathList("module-info.class") => MergeStrategy.discard
+  case x if x.endsWith("/module-info.class") => MergeStrategy.discard
+  case x =>
+    val oldStrategy = (ThisBuild / assemblyMergeStrategy).value
+    oldStrategy(x)
+}
+
 lazy val ahc                 = "com.ahc"
 lazy val scala3Version              = "3.2.2"
 
@@ -46,7 +54,9 @@ lazy val root = (project in file("."))
       "org.testcontainers" % "testcontainers"                % testContainerVersion       % Test,
       "org.testcontainers" % "postgresql"                    % testContainerVersion       % Test,
       "ch.qos.logback"     % "logback-classic"               % logbackVersion             % Test
-    )
-    // ,Compile / mainClass := Some("com.robertlabs.jobsboard.Application")
+      
+    ),
+    Compile / mainClass := Some("com.ahc.service.Application"),
+    assembly / mainClass := Some("com.ahc.service.Application")
   )
 
